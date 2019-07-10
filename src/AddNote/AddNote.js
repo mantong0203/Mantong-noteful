@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
 import ApiContext from '../ApiContext'
 import config from '../config'
+import PropTypes from 'prop-types';
 import './AddNote.css'
 
 export default class AddNote extends Component {
@@ -81,4 +82,15 @@ export default class AddNote extends Component {
       </section>
     )
   }
+}
+AddNote.defaultProps = {
+  name: '',
+  content:'',
+  folder:''
+};
+
+AddNote.propTypes ={
+  name: PropTypes.string.isRequired,
+  content:PropTypes.string.isRequired,
+  folder:PropTypes.string.isRequired
 }
