@@ -6,24 +6,34 @@ import PropTypes from 'prop-types';
 import './AddFolder.css'
 
 export default class AddFolder extends Component {
-  static defaultProps = {
-    history: {
-      push: () => { }
+  state = {
+    name: {
+        value: '',
+        touched: false,
     },
+    error: null,
   }
   static contextType = ApiContext;
+  updateName(name) {
+    this.setState({name: {value: name}});
+  }
 
   handleSubmit = e => {
     e.preventDefault()
-    const folder = {
-      name: e.target['folder-name'].value
+    const { name } = this.state;
+    const note = {
+        
+        name: name.value,
     }
+    this.setState({error:null})
+    console.log(note);
+
     fetch(`${config.API_ENDPOINT}/folders`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(folder),
+      body: JSON.stringify(note),
     })
       .then(res => {
         if (!res.ok)
@@ -48,7 +58,8 @@ export default class AddFolder extends Component {
             <label htmlFor='folder-name-input'>
               Name
             </label>
-            <input type='text' id='folder-name-input' name='folder-name' />
+            <input type="text" className="registration__control"
+           name="name" id="name" onChange={e => this.updateName(e.target.value)}/>
           </div>
           <div className='buttons'>
             <button type='submit'>
@@ -60,9 +71,8 @@ export default class AddFolder extends Component {
     )
   }
 }
-AddFolder.defaultProps = {
-  name: ''
+AddFolder.propTypes = {
+  history:PropTypes.shape({
+      push: PropTypes.func,
+  })
 };
-AddFolder.propTypes ={
-  name: PropTypes.string.isRequired
-}

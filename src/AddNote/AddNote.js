@@ -6,27 +6,51 @@ import PropTypes from 'prop-types';
 import './AddNote.css'
 
 export default class AddNote extends Component {
-  static defaultProps = {
-    history: {
-      push: () => { }
+  state = {
+    error: null,
+    name: {
+        value: '',
+        touched: false
     },
-  }
+    folderId: {
+        value: '',
+        touched: false
+    },
+    content: {
+        value: '',
+        touched: false
+    },
+}
   static contextType = ApiContext;
-
+  updateName(name) {
+    this.setState({name: {value: name}});
+  }
+  updateContent(content) {
+    this.setState({content: {value: content}});
+  }
+  updateFolder(folderId) {
+    this.setState({name: {value: folderId}});
+  }
+      
   handleSubmit = e => {
     e.preventDefault()
-    const newNote = {
-      name: e.target['note-name'].value,
-      content: e.target['note-content'].value,
-      folderId: e.target['note-folder-id'].value,
-      modified: new Date(),
-    }
+    const { name, content, folderId } = this.state;
+    const note = {
+      
+      name: name.value,
+      modified: `${Date.now()}`,
+      folderId: folderId.value,
+      content: content.value
+  }
+  this.setState({error:null})
+  console.log(note);
+   
     fetch(`${config.API_ENDPOINT}/notes`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(newNote),
+      body: JSON.stringify(note),
     })
       .then(res => {
         if (!res.ok)
@@ -83,14 +107,8 @@ export default class AddNote extends Component {
     )
   }
 }
-AddNote.defaultProps = {
-  name: '',
-  content:'',
-  folder:''
+AddNote.propTypes = {
+  history:PropTypes.shape({
+      push: PropTypes.func,
+  })
 };
-
-AddNote.propTypes ={
-  name: PropTypes.string.isRequired,
-  content:PropTypes.string.isRequired,
-  folder:PropTypes.string.isRequired
-}
