@@ -57,7 +57,11 @@ export default class AddNote extends Component {
           return res.json().then(e => Promise.reject(e))
         return res.json()
       })
+
       .then(note => {
+        name.value = '';
+        content.value = '';
+        folderId.value = '';
         this.context.addNote(note)
         this.props.history.push(`/folder/${note.folderId}`)
       })

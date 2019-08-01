@@ -40,6 +40,11 @@ export default class AddFolder extends Component {
           return res.json().then(e => Promise.reject(e))
         return res.json()
       })
+      .then(data => {
+        name.value = '';
+        this.context.addFolder(data);
+        this.props.history.push('/');
+      })
       .then(folder => {
         this.context.addFolder(folder)
         this.props.history.push(`/folder/${folder.id}`)
