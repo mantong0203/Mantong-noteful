@@ -1,118 +1,68 @@
 import React, { Component } from 'react'
-import NotefulForm from '../NotefulForm/NotefulForm'
+//import NotefulForm from '../NotefulForm/NotefulForm'
 import ApiContext from '../ApiContext'
-import config from '../config'
-import PropTypes from 'prop-types';
+//import config from '../config'
+//import PropTypes from 'prop-types';
 import './AddNote.css'
 
 export default class AddNote extends Component {
-  state = {
-    error: null,
-    name: {
-        value: '',
-        touched: false
-    },
-    folderId: {
-        value: '',
-        touched: false
-    },
-    content: {
-        value: '',
-        touched: false
-    },
-}
+
   static contextType = ApiContext;
-  updateName(name) {
-    this.setState({name: {value: name}});
-  }
-  updateContent(content) {
-    this.setState({content: {value: content}});
-  }
-  updateFolder(folderId) {
-    this.setState({name: {value: folderId}});
-  }
-      
-  handleSubmit = e => {
-    e.preventDefault()
-    const { name, content, folderId } = this.state;
-    const note = {
-      
-      name: name.value,
-      modified: `${Date.now()}`,
-      folderId: folderId.value,
-      content: content.value
-  }
-  this.setState({error:null})
-  console.log(note);
-   
-    fetch(`${config.API_ENDPOINT}/notes`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(note),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
-
-      .then(note => {
-        name.value = '';
-        content.value = '';
-        folderId.value = '';
-        this.context.addNote(note)
-        this.props.history.push(`/folder/${note.folderId}`)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
-  }
-
   render() {
-    const { folders=[] } = this.context
     return (
-      <section className='AddNote'>
-        <h2>Create a note</h2>
-        <NotefulForm onSubmit={this.handleSubmit}>
-          <div className='field'>
-            <label htmlFor='note-name-input'>
-              Name
-            </label>
-            <input type='text' id='note-name-input' name='note-name' />
-          </div>
-          <div className='field'>
-            <label htmlFor='note-content-input'>
-              Content
-            </label>
-            <textarea id='note-content-input' name='note-content' />
-          </div>
-          <div className='field'>
-            <label htmlFor='note-folder-select'>
-              Folder
-            </label>
-            <select id='note-folder-select' name='note-folder-id'>
-              <option value={null}>...</option>
-              {folders.map(folder =>
-                <option key={folder.id} value={folder.id}>
-                  {folder.name}
-                </option>
-              )}
-            </select>
-          </div>
-          <div className='buttons'>
-            <button type='submit'>
-              Add note
-            </button>
-          </div>
-        </NotefulForm>
-      </section>
-    )
+      <form
+        className="add-note"
+        id="add-note"
+        onSubmit={e => this.context.handleNoteSave(e)}
+      >
+        <label htmlFor="note-name">
+          {" "}
+          Note Name:
+          <input
+            type="text"
+            name="newNote"
+            id="note-name"
+            placeholder="Unicorns"
+            className="form-input"
+            aria-label="New note name"
+            aria-required="true"
+            onChange={e => this.context.updateNoteName(e.target.value)}
+            required
+          />
+        </label>
+
+        <label htmlFor="note-content">
+          Note Content:
+          <textarea
+            id="note-content"
+            form="add-note"
+            name="note-content"
+            placeholder="A mythical animal typically represented as a horse with a single straight horn porjecting from its forehead..."
+            wrap="soft"
+            aria-label="New note content"
+            aria-required="true"
+            onChange={e => this.context.updateNoteContent(e.target.value)}
+            required
+          />
+        </label>
+        <label htmlFor="folder-list">
+          Folder:
+          <select
+            id="folder-list"
+            onChange={e => this.context.updateFolderChoice(e.target.value)}
+          >
+            <option value="select a folder" aria-label="Choose a folder">Select a Folder</option>
+            {this.context.folders.map(folder => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <button type="submit">Save</button>
+      </form>
+    );
   }
 }
-AddNote.propTypes = {
-  history:PropTypes.shape({
-      push: PropTypes.func,
-  })
-};
+

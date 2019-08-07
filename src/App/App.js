@@ -16,6 +16,10 @@ class App extends Component {
   state = {
     notes: [],
     folders: [],
+    userInput: '',
+    userNoteName: '',
+    userNoteContent: '',
+    userFolderChoice: '',
   };
 
   componentDidMount() {
@@ -41,7 +45,30 @@ class App extends Component {
         console.error({ error })
       })
   }
+  updateUserInput = (userInput) => {
+    this.setState({
+      userInput: userInput
+    })
+  }
 
+  updateNoteName = (userInput) => {
+    this.setState({
+      userNoteName: userInput
+    })
+  }
+
+  updateNoteContent = (userInput) => {
+    this.setState({
+      userNoteContent: userInput
+    })
+  }
+
+  updateFolderChoice = (userInput) => {
+    
+    this.setState({
+      userFolderChoice: userInput
+    })
+  }
   handleAddFolder = folder => {
     this.setState({
       folders: [
@@ -129,6 +156,12 @@ class App extends Component {
       addFolder: this.handleAddFolder,
       addNote: this.handleAddNote,
       deleteNote: this.handleDeleteNote,
+      handleSave: this.handleSave,
+      handleNoteSave: this.handleNoteSave,
+      updateUserInput: this.updateUserInput,
+      updateNoteName: this.updateNoteName,
+      updateNoteContent: this.updateNoteContent,
+      updateFolderChoice: this.updateFolderChoice,
     }
     return (
       <ApiContext.Provider value={value}>
