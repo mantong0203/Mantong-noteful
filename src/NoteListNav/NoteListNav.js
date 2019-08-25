@@ -1,20 +1,29 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import CircleButton from '../CircleButton/CircleButton'
-import ApiContext from '../ApiContext'
-import { countNotesForFolder } from '../notes-helpers'
+import { countNotesForFolder } from '../notes-helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import CircleButton from '../CircleButton/CircleButton';
 import './NoteListNav.css'
+import { NoteContext } from '../NoteContext';
+import PropTypes from 'prop-types';
+
 
 export default class NoteListNav extends React.Component {
-  static contextType = ApiContext;
-
+  static contextType = NoteContext;
+  static defaultProps = {folders: []}
   render() {
-    const { folders=[], notes=[] } = this.context
+    if(this.props.isLoading){
+      return <p>loading</p>
+    }
+    const { notes, folders } = this.context
     return (
+      <>{
+         
+      
       <div className='NoteListNav'>
         <ul className='NoteListNav__list'>
-          {folders.map(folder =>
+
+          {folders.length!==0 && folders.map(folder =>
             <li key={folder.id}>
               <NavLink
                 className='NoteListNav__folder-link'
@@ -38,9 +47,22 @@ export default class NoteListNav extends React.Component {
             <FontAwesomeIcon icon='plus' />
             <br />
             Folder
-          </CircleButton>
+        </CircleButton>
         </div>
       </div>
+      }
+      </>
     )
   }
+}
+
+NoteListNav.defaultProps = {
+  folders: []
+}
+
+
+NoteListNav.propTypes={
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired
 }

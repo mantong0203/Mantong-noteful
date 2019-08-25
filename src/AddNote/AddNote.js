@@ -1,68 +1,123 @@
-import React, { Component } from 'react'
-//import NotefulForm from '../NotefulForm/NotefulForm'
-import ApiContext from '../ApiContext'
-//import config from '../config'
-//import PropTypes from 'prop-types';
-import './AddNote.css'
+import React from 'react';
+import { NoteContext } from '../NoteContext';
+import ValidationError from '../ValidationError/ValidationError'
+import PropTypes from 'prop-types';
+import '../NotefulForm/NotefulForm.css';
+ 
 
-export default class AddNote extends Component {
+class AddNote extends React.Component{
+  static contextType=NoteContext
+  constructor(props) {
+    super(props);
+    this.nameInput = React.createRef();
+    this.state={
+      name:'Sample Note Name',
+      content:'lorem ipsum..',
+      folderId:this.props.folderId,
+      givenFolderId: this.props.folderId,
+      folderName:'',
+      nameError: true,
+      contentError: true,
+      folderError: true,
+    }
+  }
+  updateName(name){
+    this.setState({name: name})
+  }
+  updateContent(content){
+    this.setState({content: content})
+  }
+  updateFolder(folderName){
+    this.setState({folderName:folderName})
+  }
+  validateName(fieldValue) {
+    const name = this.state.name.trim();
+    if (name.length === 0) {
+      return 'Name is required';
+    } else if (name.length < 3) {
+      return 'Name must be at least 3 characters long';
+    }
+  }
+  validateContent(fieldValue) {
+    const content = this.state.content.trim();
+    if (content.length < 3 && content.length >0) {
+      return 'If content exists, it must be at least 3 characters long';
+    }
+  }
+  
+  validateFolder(folders){
+    if(this.state.folderId){
+      return;
+    }
+    if(folders.length===0){
+      return;
+    }
+    let folder=folders.find(folder=> folder.name.toLowerCase()===this.state.folderName.trim().toLowerCase());
+    if(!folder)
+      return 'Cannot submit, not an existing folder';
+  }
 
-  static contextType = ApiContext;
-  render() {
-    return (
-      <form
-        className="add-note"
-        id="add-note"
-        onSubmit={e => this.context.handleNoteSave(e)}
-      >
-        <label htmlFor="note-name">
-          {" "}
-          Note Name:
-          <input
-            type="text"
-            name="newNote"
-            id="note-name"
-            placeholder="Unicorns"
-            className="form-input"
-            aria-label="New note name"
-            aria-required="true"
-            onChange={e => this.context.updateNoteName(e.target.value)}
-            required
-          />
-        </label>
 
-        <label htmlFor="note-content">
-          Note Content:
-          <textarea
-            id="note-content"
-            form="add-note"
-            name="note-content"
-            placeholder="A mythical animal typically represented as a horse with a single straight horn porjecting from its forehead..."
-            wrap="soft"
-            aria-label="New note content"
-            aria-required="true"
-            onChange={e => this.context.updateNoteContent(e.target.value)}
-            required
-          />
-        </label>
-        <label htmlFor="folder-list">
-          Folder:
-          <select
-            id="folder-list"
-            onChange={e => this.context.updateFolderChoice(e.target.value)}
-          >
-            <option value="select a folder" aria-label="Choose a folder">Select a Folder</option>
-            {this.context.folders.map(folder => (
-              <option key={folder.id} value={folder.id}>
-                {folder.name}
-              </option>
-            ))}
-          </select>
-        </label>
+  validateFinal(){
+    const folders=this.context.folders;
+    if(this.validateName()||this.validateContent()||this.validateFolder(folders)){
+      return "Cannot submit. Fix the errors";
+    }
+  }
 
-        <button type="submit">Save</button>
+  handleSubmit(event){
+    event.preventDefault();
+    if(this.validateFinal()){
+      return;
+    }
+    let folderId= this.state.givenFolderId? 
+      this.state.folderId : 
+      this.context.folders.find(folder=> folder.name.toLowerCase()===this.state.folderName.trim().toLowerCase()).id;
+    this.context.addNote(this.state.name,this.state.content?this.state.content:'',folderId)
+
+  }
+  render(){
+    if(this.props.isLoading){
+      return <p>loading</p>
+    }
+    const folders=this.context.folders;
+    return(
+      <form className='new-note-form Noteful-form' onSubmit={e=> this.handleSubmit(e)}>
+        <label htmlFor="noteName">Name of new Note:</label>
+        <input type="text" className='new-note-input' name='noteName' id='noteName' value={this.state.name} ref={this.nameInput}  onChange={e => this.updateName(e.target.value)}/>
+        <ValidationError message={this.validateName()}/>
+        <br></br>
+        <label htmlFor="noteContent">Content of new Note:</label>
+        <textarea type="text" className='new-note-content' name='noteContent' id='noteContent' value={this.state.content} onChange={e => this.updateContent(e.target.value)}/>
+        <ValidationError message={this.validateContent()}/>
+        <br></br>
+        {
+          !this.state.givenFolderId &&(
+            <>
+              <label htmlFor="noteFolder">Folder of new Note:</label>
+              <input type="text" className='new-note-folder' name='noteFolder' id='noteFolder' value={this.state.folderName} onChange={e => this.updateFolder(e.target.value)}/>
+              <ValidationError message={this.validateFolder(folders)}/>
+              <br></br>
+            </>
+
+          )
+
+          
+        }
+        <button type="submit" className="submit-new-note-button">
+            Add Note
+        </button>
+        <ValidationError message={this.validateFinal()}/>
       </form>
     );
   }
 }
 
+AddNote.propTypes={
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  folderId: PropTypes.string
+}
+
+export default AddNote;

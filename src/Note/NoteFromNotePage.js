@@ -6,7 +6,7 @@ import {NoteContext} from '../NoteContext';
 import './Note.css'
 import PropTypes from 'prop-types';
 
-export default class Note extends React.Component{
+export default class NoteFromNotePage extends React.Component{
   
   static contextType = NoteContext;
   render(){
@@ -17,7 +17,12 @@ export default class Note extends React.Component{
           {this.props.name}
         </Link>
       </h2>
-      <button className='Note__delete' type='button' onClick = {e => this.context.deleteNote(this.props.id)} >
+      <button className='Note__delete' type='button' onClick = {e => 
+        {this.context.deleteNote(this.props.id);
+        this.props.history.goBack()
+        }
+       
+       } >
         <FontAwesomeIcon icon='trash-alt' />
         {' '}
         remove
@@ -35,7 +40,8 @@ export default class Note extends React.Component{
   )}
 }
 
-Note.propTypes={
+NoteFromNotePage.propTypes={
+  history: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   modified: PropTypes.string.isRequired

@@ -1,32 +1,28 @@
 import React from 'react'
-import Note from '../Note/Note'
-import ApiContext from '../ApiContext'
-import { findNote } from '../notes-helpers'
-import './NotePageMain.css'
+import NoteFromNotePage from '../Note/NoteFromNotePage'
+import { NoteContext } from '../NoteContext';
+import {findNote} from '../notes-helpers';
+import './NotePageMain.css';
+import PropTypes from 'prop-types';
 
 export default class NotePageMain extends React.Component {
-  static defaultProps = {
-    match: {
-      params: {}
-    }
-  }
-  static contextType = ApiContext
-
-  handleDeleteNote = noteId => {
-    this.props.history.push(`/`)
-  }
-
+  static contextType=NoteContext
   render() {
-    const { notes=[] } = this.context
-    const { noteId } = this.props.match.params
-    const note = findNote(notes, noteId) || { content: '' }
-    return (
+    /* if(!this.context.notes ||this.context.notes.length===0){
+      return <p>loading</p>;
+    } */
+    /* if(this.props.isLoading){
+      return <p>loading</p>
+    } */
+    const note = findNote(this.context.notes, this.props.noteId);
+    return (<>
+      {note?     
       <section className='NotePageMain'>
-        <Note
+        <NoteFromNotePage
           id={note.id}
           name={note.name}
           modified={note.modified}
-          onDeleteNote={this.handleDeleteNote}
+          history={this.props.history}
         />
         <div className='NotePageMain__content'>
           {note.content.split(/\n \r|\n/).map((para, i) =>
@@ -34,6 +30,15 @@ export default class NotePageMain extends React.Component {
           )}
         </div>
       </section>
+          : <> </>}
+        </>
     )
   }
+}
+
+NotePageMain.propTypes={
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  noteId: PropTypes.string.isRequired
 }
