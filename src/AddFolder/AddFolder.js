@@ -11,6 +11,7 @@ class AddFolder extends React.Component{
   }
   state={
     name:'',
+    
   }
   updateName(name){
     this.setState({name: name})
@@ -30,12 +31,14 @@ class AddFolder extends React.Component{
     if(this.validateName(folders))
       return "Fix errors";
   }
-  handleSubmit(event, folders, addFolder ){
+  handleSubmit=(event, folders, addFolder )=>{
     event.preventDefault();
     if(this.validateFinal(folders)){
       return;
     }
-    addFolder(this.state.name);
+    addFolder(this.state.name)
+    this.props.history.push("/");
+   
   }
   static contextType=NoteContext
   render(){

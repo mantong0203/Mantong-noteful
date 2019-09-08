@@ -74,7 +74,7 @@ class AddNote extends React.Component{
       this.state.folderId : 
       this.context.folders.find(folder=> folder.name.toLowerCase()===this.state.folderName.trim().toLowerCase()).id;
     this.context.addNote(this.state.name,this.state.content?this.state.content:'',folderId)
-
+    this.props.history.push("/");
   }
   render(){
     if(this.props.isLoading){
