@@ -10,7 +10,7 @@ class AddFolder extends React.Component{
     this.nameInput = React.createRef();
   }
   state={
-    name:'Sample Name',
+    name:'',
   }
   updateName(name){
     this.setState({name: name})
@@ -50,7 +50,7 @@ class AddFolder extends React.Component{
         <button type="submit" className="submit-new-folder-button">
             Add Folder
         </button>
-        <ValidationError message={this.validateFinal(this.context.folders)}/>
+       
       </form>
     );
   }

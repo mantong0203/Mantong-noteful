@@ -107,7 +107,7 @@ class AddNote extends React.Component{
         <button type="submit" className="submit-new-note-button">
             Add Note
         </button>
-        <ValidationError message={this.validateFinal()}/>
+        
       </form>
     );
   }
